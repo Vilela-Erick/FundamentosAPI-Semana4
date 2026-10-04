@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { EventsModule } from './events/events.module.js';
+import { OrganizersModule } from './organizers/organizers.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -33,6 +34,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
 
     EventsModule,
+
+    OrganizersModule,
   ],
 
   controllers: [AppController],

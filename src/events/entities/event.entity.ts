@@ -4,7 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+
+import { Organizer } from '../../organizers/entities/organizer.entity.js';
 
 @Entity('events')
 export class Event {
@@ -28,6 +32,16 @@ export class Event {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ type: 'int', nullable: true })
+  organizerId: number | null;
+
+  @ManyToOne(() => Organizer, (organizer) => organizer.events, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'organizerId' })
+  organizer: Organizer | null;
 
   @CreateDateColumn()
   createdAt: Date;
