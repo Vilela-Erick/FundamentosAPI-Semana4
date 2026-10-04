@@ -1,7 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
+
 import { EventsService } from './events.service.js';
 import { CreateEventDto } from './dto/create-event.dto.js';
 import { UpdateEventDto } from './dto/update-event.dto.js';
+import { QueryEventsDto } from './dto/query-events.dto.js';
 
 @Controller('events')
 export class EventsController {
@@ -13,8 +25,8 @@ export class EventsController {
   }
 
   @Get()
-  findAll() {
-    return this.eventsService.findAll();
+  findAll(@Query() queryEventsDto: QueryEventsDto) {
+    return this.eventsService.findAll(queryEventsDto);
   }
 
   @Get(':id')
@@ -23,7 +35,10 @@ export class EventsController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateEventDto: UpdateEventDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEventDto: UpdateEventDto,
+  ) {
     return this.eventsService.update(id, updateEventDto);
   }
 
