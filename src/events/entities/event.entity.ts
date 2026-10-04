@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 import { Organizer } from '../../organizers/entities/organizer.entity.js';
+import { Registration } from '../../registrations/entities/registration.entity.js';
 
 @Entity('events')
 export class Event {
@@ -42,6 +44,9 @@ export class Event {
   })
   @JoinColumn({ name: 'organizerId' })
   organizer: Organizer | null;
+
+  @OneToMany(() => Registration, (registration) => registration.event)
+  registrations: Registration[];
 
   @CreateDateColumn()
   createdAt: Date;

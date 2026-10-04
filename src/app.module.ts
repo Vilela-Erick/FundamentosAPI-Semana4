@@ -7,6 +7,8 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { EventsModule } from './events/events.module.js';
 import { OrganizersModule } from './organizers/organizers.module.js';
+import { AttendeesModule } from './attendees/attendees.module.js';
+import { RegistrationsModule } from './registrations/registrations.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -36,6 +38,10 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     EventsModule,
 
     OrganizersModule,
+
+    AttendeesModule,
+
+    RegistrationsModule,
   ],
 
   controllers: [AppController],
