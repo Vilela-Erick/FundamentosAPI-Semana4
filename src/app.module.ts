@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller.js';
@@ -9,6 +9,8 @@ import { EventsModule } from './events/events.module.js';
 import { OrganizersModule } from './organizers/organizers.module.js';
 import { AttendeesModule } from './attendees/attendees.module.js';
 import { RegistrationsModule } from './registrations/registrations.module.js';
+import { UsersModule } from './users/users.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -16,17 +18,31 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env'],
     }),
 
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      autoLoadEntities: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const isDevelopment =
+          configService.get<string>('NODE_ENV', 'development') === 'development';
+        const syncEnabled =
+          configService.get<string>('DB_SYNCHRONIZE') === 'true';
+
+        return {
+          type: 'postgres',
+          host: configService.get<string>('DB_HOST', 'localhost'),
+          port: Number(configService.get<number>('DB_PORT', 5432)),
+          username: configService.get<string>('DB_USERNAME', 'postgres'),
+          password: configService.get<string>('DB_PASSWORD', ''),
+          database: configService.get<string>('DB_DATABASE', 'api_eventos'),
+          autoLoadEntities: true,
+          // En entrega/producción synchronize nunca debe estar activo;
+          // sólo se permite si NODE_ENV=development Y DB_SYNCHRONIZE=true explícitamente.
+          synchronize: isDevelopment && syncEnabled,
+        };
+      },
     }),
 
     ObserveModule.forRoot({
@@ -42,6 +58,10 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AttendeesModule,
 
     RegistrationsModule,
+
+    UsersModule,
+
+    AuthModule,
   ],
 
   controllers: [AppController],
