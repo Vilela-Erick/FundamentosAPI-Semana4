@@ -7,17 +7,20 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 
 import { AttendeesService } from './attendees.service.js';
 import { CreateAttendeeDto } from './dto/create-attendee.dto.js';
 import { UpdateAttendeeDto } from './dto/update-attendee.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @Controller('attendees')
 export class AttendeesController {
   constructor(private readonly attendeesService: AttendeesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body() createAttendeeDto: CreateAttendeeDto) {
     return this.attendeesService.create(createAttendeeDto);
   }
